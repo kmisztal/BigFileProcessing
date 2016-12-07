@@ -25,12 +25,12 @@ class GridBuilder
         if(child != null) { grid.add(child, p.c, p.v); }
     }
     
-    public void add(Node child, int colspan)
+    public void add(Node child, int colSpan)
     {
         Position p = pc.nextPosition();
 
-        if(child != null) { grid.add(child, p.c, p.v, colspan, 1); }
-        for(int i=0 ; i<colspan-1 ; i++) { pc.nextPosition(); }
+        if(child != null) { grid.add(child, p.c, p.v, colSpan, 1); }
+        for(int i=0 ; i<colSpan-1 ; i++) { pc.nextPosition(); }
     }
     
     public GridPane getGrid() { return grid; }

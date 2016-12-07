@@ -5,14 +5,14 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.text.Text;
 
-public class WritterGUI extends Thread
+public class WriterGUI extends Thread
 {
     private final Text status;
     private final ObservableList<Node> btnList;
     private final ObservableList<Node> tfList;
     private final FileSettings fs;
 
-    public WritterGUI(FileSettings settings, Text status, ObservableList<Node> btnList, ObservableList<Node> tfList)
+    public WriterGUI(FileSettings settings, Text status, ObservableList<Node> btnList, ObservableList<Node> tfList)
     {
         this.fs = settings;
         this.status = status;
@@ -24,7 +24,7 @@ public class WritterGUI extends Thread
     public void run()
     {
         ObservableList<Node> temp;
-        temp = tfList.filtered(tf -> tf.isDisabled() == false);
+        temp = tfList.filtered(tf -> !tf.isDisabled());
         temp.forEach(tf -> tf.setDisable(true));
         btnList.forEach(b -> b.setDisable(true));
         
