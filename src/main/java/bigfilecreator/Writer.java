@@ -8,11 +8,11 @@ import java.util.Random;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
-public class Writter extends Thread
+public class Writer extends Thread
 {
-    final FileSettings fs;
+    private final FileSettings fs;
     
-    public Writter(FileSettings settings) { this.fs = settings; }
+    public Writer(FileSettings settings) { this.fs = settings; }
         
     @Override
     public void run()
@@ -30,7 +30,7 @@ public class Writter extends Thread
                 delimiter = "\t";
                 structure = structure.replace(" t ", " \t ");
             }
-            String[] splittedArray = structure.split(delimiter);
+            String[] splitArray = structure.split(delimiter);
                     
             String type, toWrite = fs.getHeader().replace(" t ", " \t ");
             if(toWrite.length() > 0) { writer.println(toWrite); }
@@ -42,11 +42,9 @@ public class Writter extends Thread
             while(currentSize < size)
             {
                 toWrite = "";
-                for(int i=0 ; i<splittedArray.length ; i++)
-                {
-                    type = splittedArray[i].trim();
-                    switch(type)
-                    {
+                for (String aSplitArray : splitArray) {
+                    type = aSplitArray.trim();
+                    switch (type) {
                         case "boolean":
                             toWrite += rand.nextBoolean() + delimiter;
                             break;
@@ -54,47 +52,40 @@ public class Writter extends Thread
                         case "int":
                             toWrite += rand.nextInt() + delimiter;
                             break;
-                            
+
                         case "long":
                             toWrite += rand.nextLong() + delimiter;
                             break;
 
-                        case "float":
-                        {
-                            float f=1;
+                        case "float": {
+                            float f = 1;
                             long pow = rand.nextInt(38);
-                            for(int j=0 ; j<pow ; j++) { f *= 10L; }
+                            for (int j = 0; j < pow; j++) {
+                                f *= 10L;
+                            }
                             f *= rand.nextFloat();
                             toWrite += f + delimiter;
                             break;
                         }
 
-                        case "double":
-                        {
-                            double d=1;
+                        case "double": {
+                            double d = 1;
                             long pow = rand.nextInt(308);
-                            for(int j=0 ; j<pow ; j++) { d *= 10L; }
+                            for (int j = 0; j < pow; j++) {
+                                d *= 10L;
+                            }
                             d *= rand.nextDouble();
                             toWrite += d + delimiter;
                             break;
                         }
 
                         case "string":
-                        case "String":
-                        {
+                        case "String": {
                             String s = "";
                             int len = rand.nextInt(20) + 1;
                             char c;
-                            int k;
                             String alpha = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                            if(false) for(int j=0 ; j<len ; j++)
-                            {
-                                do { c = (char)rand.nextInt(65525); }
-                                while(c == fs.getDelimiter());
-                                s += c;
-                            }
-                            else for(int j=0 ; j<len ; j++)
-                            {
+                            for (int j = 0; j < len; j++) {
                                 c = alpha.charAt(rand.nextInt(52));
                                 s += c;
                             }
@@ -103,17 +94,15 @@ public class Writter extends Thread
                         }
 
                         case "timestamp":
-                        case "Timestamp":
-                        {
-                             //1900-01-01 00:00:00.0 -> 2100-12-31 23:59:59.999999999
+                        case "Timestamp": {
+                            //1900-01-01 00:00:00.0 -> 2100-12-31 23:59:59.999999999
                             Timestamp tmp = new Timestamp(rand.nextInt(201), rand.nextInt(12), rand.nextInt(29), rand.nextInt(24), rand.nextInt(60), rand.nextInt(60), rand.nextInt(1000000000));
-                            Timestamp t = new Timestamp(tmp.getTime() + rand.nextInt(4)*86400000);
+                            Timestamp t = new Timestamp(tmp.getTime() + rand.nextInt(4) * 86400000);
                             toWrite += t.toString().substring(0, 16) + delimiter;
                             break;
                         }
-                        
-                        case "state":
-                        {
+
+                        case "state": {
                             ArrayList<String> temp = states.get(stateIt);
                             toWrite += temp.get(rand.nextInt(temp.size())) + delimiter;
                             stateIt++;
@@ -121,7 +110,9 @@ public class Writter extends Thread
                             break;
                         }
 
-                        default: { break; }
+                        default: {
+                            break;
+                        }
                     }
                 }
                 writer.println(toWrite.substring(0, toWrite.length()-1));

@@ -1,6 +1,5 @@
 package bigfilecreator.Validate;
 
-import bigfilecreator.FileSettings;
 import java.io.File;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -9,7 +8,6 @@ import java.util.regex.Pattern;
 public class ValidateSettings
 {
     public static final int maxNameLength = 35;
-    private static Scanner scan;
 
     private static final String namePtrnStr = "(.+)[.](.+)";
     
@@ -116,7 +114,7 @@ public class ValidateSettings
         {
             try
             {
-                scan = new Scanner(value);
+                Scanner scan = new Scanner(value);
                 size = scan.nextDouble();
             }
             catch(Exception ex2) { return Double.NEGATIVE_INFINITY; }
@@ -149,7 +147,6 @@ public class ValidateSettings
         if(value == null) { return false; }
         value = value.trim();
         Matcher m = statePtrn.matcher(value);
-        if(!m.find()) { return false; }
-        return true;
+        return m.find();
     }
 }
