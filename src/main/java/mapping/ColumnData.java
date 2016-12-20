@@ -1,20 +1,20 @@
-package mappings;
+package mapping;
 
 /**
  * Created by AKJ1 on 2016-12-12.
  */
-public class Column<T> {
+public class ColumnData {
     private String name;
     private long index;
-    private T data;
+    private Object data;
 
-    public Column(String name, long index, T data) {
+    public ColumnData(String name, long index, Object data) {
         this.setName(name);
         this.setIndex(index);
         this.setData(data);
     }
 
-    public Column() {}
+    public ColumnData() {}
 
     @Override
     public String toString() {
@@ -37,11 +37,11 @@ public class Column<T> {
         this.index = index;
     }
 
-    public T getData() {
+    public Object getData() {
         return data;
     }
 
-    public void setData(T data) {
+    public void setData(Object data) {
         this.data = data;
     }
 }
