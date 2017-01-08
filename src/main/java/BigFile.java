@@ -6,6 +6,9 @@ import mapping.Buffer;
 import mapping.Mapper;
 import parsing.DefaultParser;
 import parsing.Parser;
+import parsing.ParsingException;
+
+import java.io.File;
 
 enum Configuration {
     DEFAULT;
@@ -15,8 +18,8 @@ public class BigFile {
     private FileReader fileReader;
     private Parser parser;
     private FileProvider fileProvider;
-    private Mapper mapper = new Mapper();
-    private Buffer buffer = new Buffer();
+    Mapper mapper;
+    Buffer buffer;
 
     public BigFile() {
         configure(Configuration.DEFAULT);
@@ -25,16 +28,16 @@ public class BigFile {
     public void configure(Configuration configuration) {
         if (configuration == Configuration.DEFAULT) {
             fileProvider = new LocalFileProvider();
-            fileReader = new VariableFileReaderWithHeader();
+            fileReader = new VariableFileReaderWithHeader(",");
             parser = new DefaultParser();
         }
     }
 
-    public void load(String path) {
+    public void load(File path, long numberOfRowsToRead) throws ParsingException {
         fileReader.setRandomAccessFile(fileProvider.obtainFileHandler(path));
-        mapper.setFileReader(fileReader);
-        mapper.setParser(parser);
-        buffer.setMapper(mapper);
+        mapper = new Mapper(fileReader, parser);
+        buffer = new Buffer(mapper);
+        buffer.setBufferSize(numberOfRowsToRead);
         buffer.load();
     }
 

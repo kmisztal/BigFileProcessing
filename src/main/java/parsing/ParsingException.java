@@ -9,6 +9,8 @@ public class ParsingException extends Exception {
     public ParsingException(long lineNumber) {
         this.lineNumber = lineNumber;
     }
+
+
     @Override
     public String getMessage() {
         return "Cannot parse line number " + lineNumber;

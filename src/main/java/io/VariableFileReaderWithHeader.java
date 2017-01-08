@@ -13,7 +13,10 @@ public class VariableFileReaderWithHeader extends FileReader {
     public VariableFileReaderWithHeader(RandomAccessFile in) {
         this.in = in;
     }
-    public VariableFileReaderWithHeader() {}
+
+    public VariableFileReaderWithHeader(String delimiter) {
+        this.delimiter = delimiter;
+    }
 
     private void init() {
         try {

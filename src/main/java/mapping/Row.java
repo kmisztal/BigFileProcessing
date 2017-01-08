@@ -8,23 +8,29 @@ import java.util.List;
  */
 public class Row {
     private List<ColumnData> columnDatas = new ArrayList<ColumnData>();
-    private long position = 0;
 
-    public Row(long position) {
-        this.position = position;
+    private long rowNumber = 0;
+
+    public Row(long rowNumber) {
+        this.rowNumber = rowNumber;
     }
 
-    public void setPosition(long position) {
-        this.position = position;
+    public void setRowNumber(long rowNumber) {
+        this.rowNumber = rowNumber;
     }
 
-    public long getPosition() {
-        return position;
+    public long getRowNumber() {
+        return rowNumber;
     }
 
     public void addColumnData(ColumnData columnData) {
         columnDatas.add(columnData);
     }
+
+    public List<ColumnData> getColumnDatas() {
+        return columnDatas;
+    }
+
 
     public ColumnData getColumnData(int index) {
         return columnDatas.get(index);

@@ -8,13 +8,15 @@ import java.util.List;
  */
 public class Result {
     private List<String[]> entries = new ArrayList<>();
-    private long position;
+    private long rowNumber;
 
-    public Result(long position) {
-        this.position = position;
+    public Result(long rowNumber) {
+        this.rowNumber = rowNumber;
     }
 
-    public long getPosition() { return this.position; }
+    public long getRowNumber() {
+        return this.rowNumber;
+    }
 
     public void addEntry(String[] entry) {
         entries.add(entry);

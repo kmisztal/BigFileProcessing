@@ -6,9 +6,7 @@ import parsing.ParsingException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 /**
  * Created by Andrzej on 2016-12-19.
@@ -23,29 +21,20 @@ public class Mapper {
         this.parser = parser;
         obtainMetadata();
     }
-    public Mapper() { obtainMetadata(); }
 
-    public void setFileReader(FileReader reader) {
-        this.reader = reader;
+    public Metadata getMetadata() {
+        return metadata;
     }
 
-    public void setParser(Parser parser) {
-        this.parser = parser;
+    public void putIntoBuffer(Buffer buffer) throws ParsingException {
+        List<Row> rows = processEntitiesIntoRows(buffer.getBufferSize());
+        buffer.add(rows);
     }
 
-    public void putIntoBuffer(Buffer buffer) {
-        Queue<Row> rows = processEntitiesIntoRows(buffer.getBufferSize());
-        buffer.offer(rows);
-    }
-
-    public Queue<Row> processEntitiesIntoRows(long amount) {
-        Queue<Row> rows = new LinkedList<>();
+    public List<Row> processEntitiesIntoRows(long amount) throws ParsingException {
+        List<Row> rows = new ArrayList<>();
         while(amount-- > 0) {
-            try {
-                rows.add(getRowFromReader());
-            } catch (ParsingException e) {
-                e.printStackTrace();
-            }
+            rows.add(getRowFromReader());
         }
         return rows;
     }
@@ -53,48 +42,52 @@ public class Mapper {
     public Row getRowFromReader() throws ParsingException {
         Result result = reader.readEntry();
         if (!parser.parse(result, metadata))
-            throw new ParsingException(result.getPosition());
-        Row row = new Row(result.getPosition());
-        int position = 0;
+            throw new ParsingException(result.getRowNumber());
+        Row row = new Row(result.getRowNumber());
+        int columnNumber = 0;
         for (String data : result.get(0)) {
-            row.addColumnData(getColumnData(position++, data));
+            row.addColumnData(getColumnData(row.getRowNumber(), columnNumber++, data));
         }
         return row;
     }
 
-    private void obtainMetadata() {
-        metadata = new Metadata(reader.readLine());
-    }
-
-    private ColumnData getColumnData(int position, String value) {
-        Metadata.Header header = metadata.getHeader(position);
+    private ColumnData getColumnData(long rowNumber, int columnNumber, String value) throws ParsingException {
+        Header header = metadata.getHeader(columnNumber);
         ColumnData columnData = new ColumnData();
-        columnData.setIndex(position);
+        columnData.setIndex(columnNumber);
         columnData.setName(header.getName());
-        switch(header.getType()) {
-            case INT:
-                columnData.setData(Integer.valueOf(value));
-                break;
-            case LONG:
-                columnData.setData(Long.valueOf(value));
-                break;
-            case FLOAT:
-                columnData.setData(Float.valueOf(value));
-                break;
-            case DOUBLE:
-                columnData.setData(Double.valueOf(value));
-                break;
-            case STRING:
-                columnData.setData(value);
-                break;
-            case TIMESTAMP:
-                columnData.setData(LocalDate.parse(value));
-                break;
-            case STATE:
-                columnData.setData(value);
-                break;
+        try {
+            switch (header.getType()) {
+                case INT:
+                    columnData.setData(Integer.valueOf(value));
+                    break;
+                case LONG:
+                    columnData.setData(Long.valueOf(value));
+                    break;
+                case FLOAT:
+                    columnData.setData(Float.valueOf(value));
+                    break;
+                case DOUBLE:
+                    columnData.setData(Double.valueOf(value));
+                    break;
+                case STRING:
+                    columnData.setData(value);
+                    break;
+                case TIMESTAMP:
+                    columnData.setData(LocalDate.parse(value));
+                    break;
+                case STATE:
+                    columnData.setData(value);
+                    break;
+            }
+        } catch (Exception e) {
+            throw new ParsingException(rowNumber);
         }
         return columnData;
+    }
+
+    private void obtainMetadata() {
+        metadata = new Metadata(reader.readLine());
     }
 
 }

@@ -10,8 +10,10 @@ import java.io.RandomAccessFile;
  * Created by AKJ1 on 2016-12-12.
  */
 public abstract class FileReader {
+
     protected RandomAccessFile in;
     protected String delimiter;
+    protected long count = 0;
 
     public void setRandomAccessFile(RandomAccessFile in) {
         this.in = in;
@@ -29,7 +31,8 @@ public abstract class FileReader {
     public Result readEntry() {
         Result result = null;
         try {
-            result = new Result(in.getFilePointer());
+            count++;
+            result = new Result(count);
             String[] entry = in.readLine().split(delimiter);
             result.addEntry(entry);
         } catch (IOException e) {
