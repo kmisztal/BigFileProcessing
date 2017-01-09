@@ -5,6 +5,8 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by AKJ1 on 2016-12-12.
@@ -55,6 +57,47 @@ public abstract class FileReader {
             e.printStackTrace();
         }
         return result;
+    }
+
+    public long[] getNumberOfRowsAndRowsPositions() throws IOException {
+        in.seek(0);
+        List<Long> positions = new ArrayList<>();
+        long numberOfRows = 0;
+        while (in.readLine() != null) {
+            numberOfRows++;
+            positions.add(in.getFilePointer());
+        }
+        positions.remove(positions.size() - 1);
+        positions.add(numberOfRows);
+
+        in.seek(0);
+        return positions.stream().mapToLong(i -> i).toArray();
+    }
+
+    public String[] getColumnTypes() throws IOException {
+        in.seek(0);
+        String line = in.readLine();
+        String columns[] = line.split(",");
+        int numberOfColumns = columns.length;
+        String columnTypes[] = new String[numberOfColumns];
+        int i = 0;
+        for (String value : columns) {
+            columnTypes[i] = value.split(":")[1];
+            i++;
+        }
+        in.seek(0);
+        return columnTypes;
+    }
+
+    public String[] getFirstFiveRows() throws IOException {
+        String rows[] = new String[5];
+        in.seek(0);
+        String line = in.readLine();
+        for (int i = 0; i < 5; i++) {
+            rows[i] = in.readLine();
+        }
+        in.seek(0);
+        return rows;
     }
 
     public Result peekEntry() {
