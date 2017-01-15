@@ -8,11 +8,11 @@ import java.util.Random;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
-public class Writter extends Thread
+public class Writer extends Thread
 {
-    final FileSettings fs;
+    private final FileSettings fs;
     
-    public Writter(FileSettings settings) { this.fs = settings; }
+    public Writer(FileSettings settings) { this.fs = settings; }
         
     @Override
     public void run()
@@ -87,13 +87,7 @@ public class Writter extends Thread
                             char c;
                             int k;
                             String alpha = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                            if(false) for(int j=0 ; j<len ; j++)
-                            {
-                                do { c = (char)rand.nextInt(65525); }
-                                while(c == fs.getDelimiter());
-                                s += c;
-                            }
-                            else for(int j=0 ; j<len ; j++)
+                            for(int j=0 ; j<len ; j++)
                             {
                                 c = alpha.charAt(rand.nextInt(52));
                                 s += c;

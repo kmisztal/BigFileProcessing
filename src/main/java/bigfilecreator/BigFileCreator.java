@@ -10,7 +10,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -134,7 +133,7 @@ public class BigFileCreator extends Application
         tf.focusedProperty().addListener
         (
             (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) ->
-            { NameValidator.isWrong((boolean)newValue, (TextField)tfList.get(0), (Text)tList.get(1), (Text)tList.get(2), (TextField)tfList.get(1), fs); }
+                    NameValidator.isWrong(newValue, (TextField)tfList.get(0), (Text)tList.get(1), (Text)tList.get(2), (TextField)tfList.get(1), fs)
         );
         
         //Path-----------------------------
@@ -174,7 +173,7 @@ public class BigFileCreator extends Application
         tf.focusedProperty().addListener
         (
             (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) ->
-            { SizeValidator.isWrong((boolean)newValue, (TextField)tfList.get(2), (Text)tList.get(7)); }
+                    SizeValidator.isWrong(newValue, (TextField)tfList.get(2), (Text)tList.get(7))
         );
         
         //Structure-----------------------------
@@ -203,11 +202,11 @@ public class BigFileCreator extends Application
             (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) ->
             {
                 TextField temp;
-                StructureValidator.isWrong((boolean)newValue, (TextField)tfList.get(3), (Text)tList.get(8), (Text)tList.get(10), (Text)tList.get(9), fs);
+                StructureValidator.isWrong(newValue, (TextField)tfList.get(3), (Text)tList.get(8), (Text)tList.get(10), (Text)tList.get(9), fs);
                 temp = (TextField)tfList.get(4);
-                if(fs.getStatesCount() > 0 && !temp.getText().equals("")) { StateValidator.isWrong((boolean)newValue, temp, (Text)tList.get(11), (Text)tList.get(13), (Text)tList.get(12), fs); }
+                if(fs.getStatesCount() > 0 && !temp.getText().equals("")) { StateValidator.isWrong(newValue, temp, (Text)tList.get(11), (Text)tList.get(13), (Text)tList.get(12), fs); }
                 temp = (TextField)tfList.get(5);
-                if(!temp.getText().equals("")) { HeaderValidator.isWrong((boolean)newValue, temp, (Text)tList.get(14), (Text)tList.get(16), (Text)tList.get(15), fs); }
+                if(!temp.getText().equals("")) { HeaderValidator.isWrong(newValue, temp, (Text)tList.get(14), (Text)tList.get(16), (Text)tList.get(15), fs); }
             }
         );
         
@@ -234,7 +233,7 @@ public class BigFileCreator extends Application
         tf.focusedProperty().addListener
         (
             (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) ->
-            { StateValidator.isWrong((boolean)newValue, (TextField)tfList.get(4), (Text)tList.get(11), (Text)tList.get(13), (Text)tList.get(12), fs); }
+                    StateValidator.isWrong(newValue, (TextField)tfList.get(4), (Text)tList.get(11), (Text)tList.get(13), (Text)tList.get(12), fs)
         );
         
         //Header-----------------------------
@@ -262,7 +261,7 @@ public class BigFileCreator extends Application
             (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) ->
             {
                 TextField temp = (TextField)tfList.get(5);
-                if(!temp.getText().equals("")) { HeaderValidator.isWrong((boolean)newValue, temp, (Text)tList.get(14), (Text)tList.get(16), (Text)tList.get(15), fs); }
+                if(!temp.getText().equals("")) { HeaderValidator.isWrong(newValue, temp, (Text)tList.get(14), (Text)tList.get(16), (Text)tList.get(15), fs); }
             }
         );
         
@@ -274,29 +273,24 @@ public class BigFileCreator extends Application
         btn.setDisable(true);
         btn.setMaxWidth(minWidthMainCol);
         
-        btn.setOnAction(new EventHandler<ActionEvent>()
-        {
-            @Override
-            public void handle(ActionEvent e)
+        btn.setOnAction(e -> {
+            if(!fs.isReady())
             {
-                if(!fs.isReady())
-                {
-                    ((Text)tList.get(17)).setText("");
-                    ((Text)tList.get(18)).setText("Nie można zbudować pliku, wypełnij poprawnie wszystkie pola.");
-                }
-                else
-                {
-                    ((Text)tList.get(17)).setText("");
-                    ((Text)tList.get(18)).setText("");
-                    
-                    String path = fs.getAllName();
-                    File file = new File(path);
-                    if(file.exists()) { file.delete(); }
-                    Writter t1 = new Writter(fs);
-                    WritterGUI t2 = new WritterGUI(fs, (Text)tList.get(17), btnList, tfList);
-                    t1.start();
-                    t2.start();
-                }
+                ((Text)tList.get(17)).setText("");
+                ((Text)tList.get(18)).setText("Nie można zbudować pliku, wypełnij poprawnie wszystkie pola.");
+            }
+            else
+            {
+                ((Text)tList.get(17)).setText("");
+                ((Text)tList.get(18)).setText("");
+
+                String path = fs.getAllName();
+                File file = new File(path);
+                if(file.exists()) { file.delete(); }
+                Writer t1 = new Writer(fs);
+                WriterGUI t2 = new WriterGUI(fs, (Text)tList.get(17), btnList, tfList);
+                t1.start();
+                t2.start();
             }
         });
         

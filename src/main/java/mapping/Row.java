@@ -7,7 +7,7 @@ import java.util.List;
  * Created by AKJ1 on 2016-12-12.
  */
 public class Row {
-    private List<ColumnData> columnDatas = new ArrayList<ColumnData>();
+    private List<ColumnData> columnDatas = new ArrayList<>();
 
     private long rowNumber = 0;
 

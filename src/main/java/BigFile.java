@@ -7,11 +7,12 @@ import mapping.Mapper;
 import parsing.DefaultParser;
 import parsing.Parser;
 import parsing.ParsingException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 
 enum Configuration {
-    DEFAULT;
+    DEFAULT
 }
 
 public class BigFile {
@@ -31,6 +32,8 @@ public class BigFile {
             fileReader = new VariableFileReaderWithHeader(",");
             parser = new DefaultParser();
         }
+        else
+            throw new NotImplementedException();
     }
 
     public void load(File path, long numberOfRowsToRead) throws ParsingException {
