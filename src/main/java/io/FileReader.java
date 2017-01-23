@@ -3,6 +3,7 @@ package io;
 import mapping.Result;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -45,8 +46,14 @@ public abstract class FileReader {
     }
 
     public Result readEntries(long amount) {
+        return readEntries(0, amount);
+    }
+
+    public Result readEntries(long first, long amount) {
         Result result = null;
+        long pos = getRowNumber(first);
         try {
+            in.seek(pos);
             result = new Result(in.getFilePointer());
             while(amount-- > 0) {
                 String[] entry = in.readLine().split(delimiter);
@@ -57,6 +64,17 @@ public abstract class FileReader {
             e.printStackTrace();
         }
         return result;
+    }
+
+    private long getRowNumber(long nr) {
+        try {
+            RandomAccessFile raf = new RandomAccessFile("positions.out","r");
+            raf.seek(nr*8);
+            return raf.readLong();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     public long[] getNumberOfRowsAndRowsPositions() throws IOException {

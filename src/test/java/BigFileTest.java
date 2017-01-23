@@ -7,6 +7,7 @@ import org.junit.Test;
 import parsing.ParsingException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +63,25 @@ public class BigFileTest {
             final String msg = "Cannot parse line number " + 1;
             Assert.assertEquals(msg, e.getMessage());
         }
+    }
+
+    @Test
+    public void generate() throws IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("testFile.csv").getFile());
+        BigFile bg = new BigFile();
+        bg.examine(file);
+
+        //bg.readFromPositionsFile("positions.out");
+
+        bg.fileReader.readEntries(1,3).getAll().forEach(a -> {
+            for (String s: a) {
+                System.out.print(s + ";");
+            }
+            System.out.println();
+        });
+
+
     }
 
 
