@@ -67,8 +67,7 @@ public abstract class FileReader {
     }
 
     private long getRowNumber(long nr) {
-        try {
-            RandomAccessFile raf = new RandomAccessFile("positions.out","r");
+        try (RandomAccessFile raf = new RandomAccessFile("positions.out","r")){
             raf.seek(nr*8);
             return raf.readLong();
         } catch (IOException e) {

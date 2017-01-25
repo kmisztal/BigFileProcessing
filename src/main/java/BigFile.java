@@ -4,6 +4,7 @@ import io.LocalFileProvider;
 import io.VariableFileReaderWithHeader;
 import mapping.Buffer;
 import mapping.Mapper;
+import mapping.Result;
 import parsing.DefaultParser;
 import parsing.Parser;
 import parsing.ParsingException;
@@ -33,8 +34,7 @@ public class BigFile {
             fileProvider = new LocalFileProvider();
             fileReader = new VariableFileReaderWithHeader(",");
             parser = new DefaultParser();
-        }
-        else
+        } else
             throw new NotImplementedException();
     }
 
@@ -98,6 +98,109 @@ public class BigFile {
             }
         }
     }
+
+    private boolean check_type(String tmp) {
+        switch (tmp) {
+            case "int":
+            case "long":
+            case "float":
+            case "double":
+                break;
+            default:
+                throw new RuntimeException("No such data type: " + tmp);
+        }
+        return true;
+    }
+
+    private long read_prop(long lastRow, long columnNumber) throws IOException {
+        long rows = 0;
+        long columns;
+        try (java.io.FileReader fis = new java.io.FileReader("properties.txt")) {
+            BufferedReader in = new BufferedReader(fis);
+            rows = Long.parseLong(in.readLine().split("=")[1]) - 1;
+            rows = rows > lastRow ? lastRow : rows;
+            columns = Long.parseLong(in.readLine().split("=")[1]);
+            if (columns < columnNumber) throw new IndexOutOfBoundsException();
+            String type = "";
+            for (int i = 0; i < columnNumber; i++) {
+                type = in.readLine().split("=")[1];
+            }
+            check_type(type);
+        } catch (FileNotFoundException e) {
+            System.out.println("File properties.txt not found");
+        }
+        return rows;
+    }
+
+    public double stats_AVG(long firstRow, long lastRow, int columnNumber) throws IOException {
+        long rows = read_prop(lastRow, columnNumber);
+        double output = 0.0;
+        long i = firstRow;
+        for (; i <= rows - 100; i += 100) {
+            Result R = fileReader.readEntries(i, 100);
+            for (int j = 0; j < 100; j++) {
+                output += Double.parseDouble(R.get(j, columnNumber));
+            }
+        }
+        if (rows - i > 0) {
+            Result R = fileReader.readEntries(i, rows - i);
+            for (int j = 0; j < rows - i; j++) {
+                output += Double.parseDouble(R.get(j, columnNumber));
+            }
+        }
+        return output / (rows - firstRow);
+    }
+
+    public double[] stats_MINMAX(long firstRow, long lastRow, int columnNumber) throws IOException {
+        long rows = read_prop(lastRow, columnNumber);
+        double[] results = new double[2];
+        results[0] = (double) Integer.MIN_VALUE;
+        results[1] = (double) Integer.MAX_VALUE;
+        long i = firstRow;
+        double curr;
+        for (; i <= rows - 100; i += 100) {
+            Result R = fileReader.readEntries(i, 100);
+            for (int j = 0; j < 100; j++) {
+                curr = Double.parseDouble(R.get(j, columnNumber));
+                if (curr < results[0]) results[0] = curr;
+                else if (curr > results[1]) results[1] = curr;
+            }
+        }
+        if (rows - i > 0) {
+            Result R = fileReader.readEntries(i, rows - i);
+            for (int j = 0; j < rows - i; j++) {
+                curr = Double.parseDouble(R.get(j, columnNumber));
+                if (curr < results[0]) results[0] = curr;
+                else if (curr > results[1]) results[1] = curr;
+            }
+        }
+        return results;
+    }
+
+    public double stats_STD(long firstRow, long lastRow, int columnNumber) throws IOException {
+        long rows = read_prop(lastRow, columnNumber);
+        double avg = 0.0;
+        double Xsqr = 0.0;
+        long i = firstRow;
+        for (; i <= rows - 100; i += 100) {
+            Result R = fileReader.readEntries(i, 100);
+            for (int j = 0; j < 100; j++) {
+                double var = Double.parseDouble(R.get(j, columnNumber));
+                avg += var / (rows - firstRow);
+                Xsqr += var * var / (rows - firstRow);
+            }
+        }
+        if (rows - i > 0) {
+            Result R = fileReader.readEntries(i, rows - i);
+            for (int j = 0; j < rows - i; j++) {
+                double var = Double.parseDouble(R.get(j, columnNumber));
+                avg += var / (rows - firstRow);
+                Xsqr += var * var / (rows - firstRow);
+            }
+        }
+        return Math.sqrt(Xsqr - avg * avg);
+    }
+
 
     //can read like this
     public void readFromPositionsFile(String file) throws IOException {

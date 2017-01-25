@@ -74,6 +74,9 @@ public class BigFileTest {
 
         //bg.readFromPositionsFile("positions.out");
 
+        System.out.println(bg.stats_AVG(0,100,2));
+        System.out.println(bg.stats_STD(0,100,2));
+
         bg.fileReader.readEntries(1,3).getAll().forEach(a -> {
             for (String s: a) {
                 System.out.print(s + ";");
